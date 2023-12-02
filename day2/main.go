@@ -30,7 +30,6 @@ func part1(lines []string) string {
 		id, games := parseGames(lines[i])
 
 		if isValid(games, maxGame) {
-			fmt.Println(id)
 			sum += id
 		}
 	}
@@ -38,7 +37,17 @@ func part1(lines []string) string {
 	return strconv.Itoa(sum)
 }
 
-func part2(lines []string) string { return "Implement me!" }
+func part2(lines []string) string {
+	sum := 0
+
+	for i := 0; i < len(lines); i++ {
+		_, games := parseGames(lines[i])
+
+		sum += calculatePower(games)
+	}
+
+	return strconv.Itoa(sum)
+}
 
 func parseGames(line string) (int, []Game) {
 	games := make([]Game, 0)
@@ -104,4 +113,20 @@ func isValid(games []Game, maxGame Game) bool {
 	}
 
 	return true;
+}
+
+func calculatePower(games []Game) int {
+	minRed, minGreen, minBlue := 0,0,0
+
+	for i := 0; i < len(games); i++ {
+		game := games[i]
+
+		if minRed < game.red     { minRed   = game.red }
+		if minGreen < game.green { minGreen = game.green }
+		if minBlue < game.blue   { minBlue  = game.blue }
+	}
+
+	fmt.Println(games, minRed, minGreen, minBlue)
+
+	return minRed * minGreen * minBlue
 }
