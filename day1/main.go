@@ -11,7 +11,7 @@ import (
 var words = [9]string { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" }
 
 func main() {
-	lines, err := util.LoadPrompt("day1");
+	lines, err := util.LoadInput("day1");
 	util.CheckErr(err)
 
 	fmt.Println("Part 1: " + part1(lines))
@@ -48,7 +48,7 @@ func part2(lines []string) string {
 		leftWordValue, leftWordIndex   := minWordIndex(line)
 		rightWordValue, rightWordIndex := maxWordIndex(line)
 
-		// This breaks on negative index (no digits found), but only the test prompt on Part 2 has a line with no digits
+		// This breaks on negative index (no digits found), but only the test input on Part 2 has a line with no digits
 		// day1/part2.txt changes line 2 from "eightwothree" to "eightwo1three" to get around this, since it has an equivalent Part 2 value
 		leftDigitValue  := int(line[leftDigitIndex] - '0')
 		rightDigitValue := int(line[rightDigitIndex] - '0')

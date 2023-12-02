@@ -9,13 +9,23 @@ Solutions for Advent of Code 2023
 ```sh
 go run day1/main.go
 
-# Runs with a full prompt at day1/prompt.txt
+# Runs with a full input at day1/input.txt
 ```
 
-## Run development solution with a custom prompt
+## Run development solution with a custom input file
 
 ```sh
 go run day1/main.go test
 
-# Runs with a test prompt at day1/test.txt
+# Runs with a test input at day1/test.txt
 ```
+
+# Development
+
+## Scaffold a new solution
+
+```sh
+./generate.sh
+```
+
+This will create a new directory `/day<NUMBER>`, add a `main.go` template, initialize a Go package, and add blank prompts.

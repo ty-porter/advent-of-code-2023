@@ -11,8 +11,8 @@ func CheckErr(e error) {
 	}
 }
 
-func LoadPrompt(path string) ([]string, error) {
-	file, err := os.Open(path + "/" + promptName() + ".txt")
+func LoadInput(path string) ([]string, error) {
+	file, err := os.Open(path + "/" + inputName() + ".txt")
 	CheckErr(err)
 
 	var lines []string
@@ -25,10 +25,10 @@ func LoadPrompt(path string) ([]string, error) {
   return lines, scanner.Err()
 }
 
-func promptName() string {
+func inputName() string {
 	if (len(os.Args) > 1) {
 		return os.Args[1]
 	}
 
-	return "prompt"
+	return "input"
 }
