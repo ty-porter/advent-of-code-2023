@@ -53,8 +53,8 @@ func part2(lines []string) string {
 		leftDigitValue  := int(line[leftDigitIndex] - '0')
 		rightDigitValue := int(line[rightDigitIndex] - '0')
 
-		leftDigit  := minValueByBoundedIndex(leftWordIndex, leftWordValue, leftDigitIndex, leftDigitValue)
-		rightDigit := maxValueByBoundedIndex(rightWordIndex, rightWordValue, rightDigitIndex, rightDigitValue)
+		leftDigit  := targetValue(leftWordIndex,  leftWordValue,  leftDigitIndex,  leftDigitValue,  false)
+		rightDigit := targetValue(rightWordIndex, rightWordValue, rightDigitIndex, rightDigitValue, true)
 
 		sum += leftDigit * 10 + rightDigit
 	}
@@ -94,20 +94,15 @@ func maxWordIndex(line string) (value int, pos int) {
 	return value, pos
 }
 
-func minValueByBoundedIndex(wordIndex int, wordValue int, digitIndex int, digitValue int) (int) {
-	if wordIndex < 0  { return digitValue }
-	if digitIndex < 0 { return wordValue }
+func targetValue(wi int, wv int, di int, dv int, searchMax bool) (int) {
+	if wi < 0 { return dv }
+	if di < 0 { return wv }
 
-	if wordIndex < digitIndex {
-		return wordValue
-	} else { return digitValue }
-}
+	candidates := map[int]int { wi: wv, di: dv }
 
-func maxValueByBoundedIndex(wordIndex int, wordValue int, digitIndex int, digitValue int) (int) {
-	if wordIndex < 0  { return digitValue }
-	if digitIndex < 0 { return wordValue }
-
-	if wordIndex > digitIndex {
-		return wordValue
-	} else { return digitValue }
+	if searchMax {
+		return candidates[max(wi, di)]
+	} else { 
+		return candidates[min(wi, di)]
+	}
 }
