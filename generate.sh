@@ -14,12 +14,14 @@ pushd $NEXTDAY_DIR
 # Copy go template
 cp ../main.go.template main.go
 
+# Copy the day into the go template input path lookup
+sed -i "s/<#>/$NEXTDAY/g" main.go
+
 # Init the mod
 go mod init
 
-# Copy blank inputs for test data and actual input
-touch part1.txt
-touch part2.txt
+# Copy blank inputs for test input and actual input
+touch test.txt
 touch input.txt
 
 popd

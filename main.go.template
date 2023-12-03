@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	lines, err := util.LoadInput("day1");
+	lines, err := util.LoadInput("day<#>");
 	util.CheckErr(err)
 
 	fmt.Println("Part 1: " + part1(lines))

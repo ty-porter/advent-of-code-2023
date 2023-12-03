@@ -28,4 +28,4 @@ go run day1/main.go test
 ./generate.sh
 ```
 
-This will create a new directory `/day<NUMBER>`, add a `main.go` template, initialize a Go package, and add blank prompts.
+This will create a new directory `/day<NUMBER>`, add a `main.go` template, initialize a Go package, and add blank input files.
