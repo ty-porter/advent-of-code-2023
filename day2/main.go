@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ty-porter/advent-of-code-2023/util"
-  "fmt"
+	"fmt"
 	"strconv"
 	"strings"
 )
