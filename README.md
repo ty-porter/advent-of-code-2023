@@ -20,6 +20,15 @@ go run day1/main.go test
 # Runs with a test input at day1/test.txt
 ```
 
+## Force run a skipped solution (if applicable)
+
+```sh
+go run day1/main.go -run-part2
+go run day1/main.go -run-part2 test
+
+# Some days can skip parts if the algorithm is inefficient.
+```
+
 # Development
 
 ## Scaffold a new solution
