@@ -54,25 +54,25 @@ func part2(lines []string) string {
   return strconv.Itoa(calculateMargin(time, record))
 }
 
-func calculateMargin(D int, L int) int {
+func calculateMargin(D int, R int) int {
   /*
-  Distance traveled (L) is given by:
+  Record distance traveled (R) is given by:
 
-    L <= (D - T) * T
+    R <= (D - T) * T
 
-  where D = race duration and T - time held.
+  where D = race duration and T = time held.
 
   This forms a quadratic equation:
 
-    0 <= -T^2 + DT - L
+    0 <= -T^2 + DT - R
 
       or, in terms of x:
 
-    0 <= -x^2 + Dx - L
+    0 <= -x^2 + Dx - R
 
   Roots of this equation are:
 
-    -D +/- sqrt( D^2 + 4(-L) )
+    -D +/- sqrt( D^2 + 4(-R) )
     --------------------------
                 -2
 
@@ -81,7 +81,7 @@ func calculateMargin(D int, L int) int {
   */
   a := float64(-1)
   b := float64(D)
-  c := float64(-L)
+  c := float64(-R)
 
   r1 := (-b + math.Sqrt(b*b - 4*a*c)) / (2 * a)
   r2 := (-b - math.Sqrt(b*b - 4*a*c)) / (2 * a)
