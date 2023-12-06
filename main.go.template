@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/ty-porter/advent-of-code-2023/util"
-	"fmt"
+  "github.com/ty-porter/advent-of-code-2023/util"
+  "fmt"
 )
 
 func main() {
-	lines, err := util.LoadInput("day<#>");
-	util.CheckErr(err)
+  lines, err := util.LoadInput("day<#>");
+  util.CheckErr(err)
 
-	fmt.Println("Part 1: " + part1(lines))
-	fmt.Println("Part 2: " + part2(lines))
+  fmt.Println("Part 1: " + part1(lines))
+  fmt.Println("Part 2: " + part2(lines))
 }
 
 func part1(lines []string) string { return "Implement me!" }
