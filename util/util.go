@@ -4,6 +4,7 @@ import (
   "bufio"
   "flag"
   "os"
+  "strconv"
 )
 
 type Flags struct {
@@ -72,4 +73,12 @@ func inputName() string {
   if len(AoCFlags.others) > 0 { return AoCFlags.others[0] }
 
   return "input"
+}
+
+func ForceInt(s string) int {
+  i, err := strconv.Atoi(s)
+
+  if err != nil { panic(s) }
+
+  return i
 }
