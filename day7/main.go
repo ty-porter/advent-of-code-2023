@@ -27,25 +27,26 @@ func main() {
 }
 
 func part1(lines []string) string {
-  hands := make([]hand, 0)
-
-  for _, line := range lines {
-    hand := parseLine(line, calculateRank)
-
-    hands = append(hands, hand)
-  }
+  hands := parseLines(lines)
 
   slices.SortFunc(hands, func (a, b hand) int { return compareHands(a, b, calculateLabelValue) })
 
-  total := 0
-  for i, hand := range hands {
-    total += hand.bid * (i + 1)
-  }
+  total := calculateTotal(hands)
 
   return strconv.Itoa(total)
 }
 
 func part2(lines []string) string {
+  hands := parseLines(lines)
+
+  slices.SortFunc(hands, func (a, b hand) int { return compareHands(a, b, calculateLabelValueWithWilds) })
+
+  total := calculateTotal(hands)
+
+  return strconv.Itoa(total)
+}
+
+func parseLines(lines []string) []hand {
   hands := make([]hand, 0)
 
   for _, line := range lines {
@@ -54,14 +55,7 @@ func part2(lines []string) string {
     hands = append(hands, hand)
   }
 
-  slices.SortFunc(hands, func (a, b hand) int { return compareHands(a, b, calculateLabelValueWithWilds) })
-
-  total := 0
-  for i, hand := range hands {
-    total += hand.bid * (i + 1)
-  }
-
-  return strconv.Itoa(total)
+  return hands
 }
 
 func parseLine(line string, calculateRank rankFn) hand {
@@ -73,6 +67,16 @@ func parseLine(line string, calculateRank rankFn) hand {
   hand.bid    = util.ForceInt(fields[1])
 
   return *hand
+}
+
+func calculateTotal(hands []hand) int {
+  total := 0
+
+  for i, hand := range hands {
+    total += hand.bid * (i + 1)
+  }
+
+  return total
 }
 
 func powInt(x, y int) int {
@@ -143,27 +147,13 @@ func calculateLabelValue(l byte) int {
 }
 
 func calculateRankWithWilds(line string) int {
-  seen := make(map[rune]int)
-  counts := make([]int, len(line) + 1)
-  i := 1
+  rank := calculateRank(line)
   j := 0
 
   for _, c := range line {
-    if seen[c] == 0 {
-      seen[c] = i
-      i += 1
+    if c == 'J' {
+      j++
     }
-    
-    counts[seen[c]] += 1
-    if c == 'J' { j++ }
-  }
-
-  slices.Sort(counts)
-
-  rank := 0
-  for i := 0; i < len(counts) - 1; i++ {
-    v := counts[i + 1]
-    rank += v * powInt(10, i)
   }
 
   switch j {
@@ -206,24 +196,7 @@ func calculateRankWithWilds(line string) int {
 }
 
 func calculateLabelValueWithWilds(l byte) int {
-  v := int(rune(l) - '0')
+  if l == 'J' { return 1 }
 
-  if 2 <= v && v <= 9 {
-    return v
-  }
-
-  switch l {
-  case 'A':
-    return 13
-  case 'K':
-    return 12
-  case 'Q':
-    return 11
-  case 'T':
-    return 10
-  case 'J':
-    return 1
-  }
-
-  panic(fmt.Sprintf("Invalid card: %s", strconv.QuoteRune(rune(l))))
+  return calculateLabelValue(l)
 }
