@@ -15,6 +15,9 @@ type hand struct {
   rank   int
 }
 
+type rankFn func(string) int
+type labelValueFn func(byte) int
+
 func main() {
   lines, err := util.LoadInput("day7");
   util.CheckErr(err)
@@ -27,12 +30,12 @@ func part1(lines []string) string {
   hands := make([]hand, 0)
 
   for _, line := range lines {
-    hand := parseLine(line)
+    hand := parseLine(line, calculateRank)
 
     hands = append(hands, hand)
   }
 
-  slices.SortFunc(hands, compareHands)
+  slices.SortFunc(hands, func (a, b hand) int { return compareHands(a, b, calculateLabelValue) })
 
   total := 0
   for i, hand := range hands {
@@ -42,9 +45,26 @@ func part1(lines []string) string {
   return strconv.Itoa(total)
 }
 
-func part2(lines []string) string { return "Implement me!" }
+func part2(lines []string) string {
+  hands := make([]hand, 0)
 
-func parseLine(line string) hand {
+  for _, line := range lines {
+    hand := parseLine(line, calculateRankWithWilds)
+
+    hands = append(hands, hand)
+  }
+
+  slices.SortFunc(hands, func (a, b hand) int { return compareHands(a, b, calculateLabelValueWithWilds) })
+
+  total := 0
+  for i, hand := range hands {
+    total += hand.bid * (i + 1)
+  }
+
+  return strconv.Itoa(total)
+}
+
+func parseLine(line string, calculateRank rankFn) hand {
   fields := strings.Fields(line)
 
   hand := new(hand)
@@ -53,6 +73,25 @@ func parseLine(line string) hand {
   hand.bid    = util.ForceInt(fields[1])
 
   return *hand
+}
+
+func powInt(x, y int) int {
+  return int(math.Pow(float64(x), float64(y)))
+}
+
+func compareHands(a, b hand, calculateLabelValue labelValueFn) int {
+  if a.rank < b.rank { return -1 }
+  if a.rank > b.rank { return 1 }
+
+  for i := 0; i < len(a.labels); i++ {
+    va := calculateLabelValue(a.labels[i])
+    vb := calculateLabelValue(b.labels[i])
+
+    if va < vb { return -1 }
+    if va > vb { return 1 }
+  }
+
+  return 0
 }
 
 func calculateRank(line string) int {
@@ -80,25 +119,6 @@ func calculateRank(line string) int {
   return rank
 }
 
-func powInt(x, y int) int {
-  return int(math.Pow(float64(x), float64(y)))
-}
-
-func compareHands(a, b hand) int {
-  if a.rank < b.rank { return -1 }
-  if a.rank > b.rank { return 1 }
-
-  for i := 0; i < len(a.labels); i++ {
-    va := calculateLabelValue(a.labels[i])
-    vb := calculateLabelValue(b.labels[i])
-
-    if va < vb { return -1 }
-    if va > vb { return 1 }
-  }
-
-  return 0
-}
-
 func calculateLabelValue(l byte) int {
   v := int(rune(l) - '0')
 
@@ -117,6 +137,92 @@ func calculateLabelValue(l byte) int {
     return 11
   case 'T':
     return 10
+  }
+
+  panic(fmt.Sprintf("Invalid card: %s", strconv.QuoteRune(rune(l))))
+}
+
+func calculateRankWithWilds(line string) int {
+  seen := make(map[rune]int)
+  counts := make([]int, len(line) + 1)
+  i := 1
+  j := 0
+
+  for _, c := range line {
+    if seen[c] == 0 {
+      seen[c] = i
+      i += 1
+    }
+    
+    counts[seen[c]] += 1
+    if c == 'J' { j++ }
+  }
+
+  slices.Sort(counts)
+
+  rank := 0
+  for i := 0; i < len(counts) - 1; i++ {
+    v := counts[i + 1]
+    rank += v * powInt(10, i)
+  }
+
+  switch j {
+  case 0:
+    break
+  case 1:
+    switch rank {
+    case 11111: 
+      rank = 21110
+    case 21110: 
+      rank = 31100
+    case 22100: 
+      rank = 32000
+    case 31100: 
+      rank = 41000
+    case 41000: 
+      rank = 50000
+  }
+  case 2:
+    switch rank {
+    case 21110: 
+      rank = 31100 
+    case 22100: 
+      rank = 41000
+    case 32000: 
+      rank = 50000
+    }
+  case 3:
+    switch rank {
+    case 31100: 
+      rank = 41000
+    case 32000: 
+      rank = 50000
+    }
+  case 4, 5:      
+    rank = 50000
+  }
+
+  return rank
+}
+
+func calculateLabelValueWithWilds(l byte) int {
+  v := int(rune(l) - '0')
+
+  if 2 <= v && v <= 9 {
+    return v
+  }
+
+  switch l {
+  case 'A':
+    return 13
+  case 'K':
+    return 12
+  case 'Q':
+    return 11
+  case 'T':
+    return 10
+  case 'J':
+    return 1
   }
 
   panic(fmt.Sprintf("Invalid card: %s", strconv.QuoteRune(rune(l))))
