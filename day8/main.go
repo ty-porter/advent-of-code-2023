@@ -24,7 +24,7 @@ func main() {
 
   startingNodes := makeNodes(nodes, lines[2:len(lines)])
 
-  // fmt.Println("Part 1: " + part1(directions, nodes))
+  fmt.Println("Part 1: " + part1(directions, nodes))
   fmt.Println("Part 2: " + part2(directions, startingNodes, nodes))
 }
 
