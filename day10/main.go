@@ -64,7 +64,6 @@ func findStart(grid []string) Point {
   panic("Start position not found!")
 }
 
-// This is not a general solution! My input contains start SF, so moving right from start is not valid.
 func createRunners(point Point, grid []string) []*Point {
   invalidPipes := []string { "-7F", "-JL", "|FL", "|7J" }
   directions := [][]int { {0, 1}, {0, -1}, {1, 0}, {-1, 0} }
