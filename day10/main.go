@@ -50,7 +50,7 @@ func part1(grid []string, start Point) string {
     if v > maxDist { maxDist = v }
   }
 
-  return strconv.Itoa(maxDist) + 3 // BUGBUG: Possible off-by-one
+  return strconv.Itoa(maxDist + 3) // BUGBUG: Possible off-by-one
 }
 
 func part2(grid []string) string { return "Implement me!" }
