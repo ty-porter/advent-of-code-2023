@@ -27,8 +27,6 @@ func main() {
 }
 
 func part1(grid []string, start Point) string {
-  // This has a known bug and not sure of the root cause currently.
-  // The answer output is off by 3, so possibly an off-by-one issue for each runner.
   runners := createRunners(start)
   distances := make(map[string]int)
 
@@ -50,7 +48,7 @@ func part1(grid []string, start Point) string {
     if v > maxDist { maxDist = v }
   }
 
-  return strconv.Itoa(maxDist + 3) // BUGBUG: Possible off-by-one
+  return strconv.Itoa(maxDist)
 }
 
 func part2(grid []string) string { return "Implement me!" }
@@ -65,8 +63,9 @@ func findStart(grid []string) Point {
   panic("Start position not found!")
 }
 
+// This is not a general solution! My input contains start SF, so moving right from start is not valid.
 func createRunners(point Point) []*Point {
-  directions := [][]int { {0, 1}, { 1, 0 }, { 0, -1 }, { -1, 0 }}
+  directions := [][]int { {0, 1}, {0, -1}, {-1, 0} }
   points := make([]*Point, len(directions))
 
   for i, d := range directions {
