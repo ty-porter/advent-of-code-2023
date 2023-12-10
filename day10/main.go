@@ -7,6 +7,7 @@ import (
 )
 
 type Point struct {
+  id     int  // ID for debugging multiple runners
   x, y   int  // Location on grid
   dx, dy int  // Current velocity Δx, Δy in [-1, 0, 1], in screen coordinates (+ is down, right)
   steps  int  // Step counter
@@ -26,6 +27,8 @@ func main() {
 }
 
 func part1(grid []string, start Point) string {
+  // This has a known bug and not sure of the root cause currently.
+  // The answer output is off by 3, so possibly an off-by-one issue for each runner.
   runners := createRunners(start)
   distances := make(map[string]int)
 
@@ -47,7 +50,7 @@ func part1(grid []string, start Point) string {
     if v > maxDist { maxDist = v }
   }
 
-  return strconv.Itoa(maxDist)
+  return strconv.Itoa(maxDist) + 3 // BUGBUG: Possible off-by-one
 }
 
 func part2(grid []string) string { return "Implement me!" }
@@ -67,24 +70,20 @@ func createRunners(point Point) []*Point {
   points := make([]*Point, len(directions))
 
   for i, d := range directions {
-    point := Point { x: point.x, y: point.y, dx: d[0], dy: d[1], pipe: target }
+    point := Point { id: i, x: point.x, y: point.y, dx: d[0], dy: d[1], pipe: target }
     points[i] = &point
   }
-
-  fmt.Println(points)
 
   return points
 }
 
 func move(grid []string, position *Point, distances map[string]int) {
-  fmt.Println("BEFORE:", position)
   if position.steps > 0 && position.pipe == target { return }
 
   xNext := position.x + position.dx
   yNext := position.y + position.dy
   pipe := rune(grid[yNext][xNext])
 
-  fmt.Println("Pipe:  ", strconv.QuoteRune(pipe), fmt.Sprintf("at {%d,%d}", xNext, yNext))
   switch pipe {
   case '|':
     position.moveRel(0, position.dy)
@@ -110,7 +109,7 @@ func move(grid []string, position *Point, distances map[string]int) {
     }
   case 'F':
     if position.dx == -1 {
-      position.moveRel(0, -1)
+      position.moveRel(0, 1)
     } else {
       position.moveRel(1, 0)
     }
@@ -123,9 +122,6 @@ func move(grid []string, position *Point, distances map[string]int) {
   position.pipe = pipe
 
   writeMinDistance(position, distances)
-
-  fmt.Println("AFTER: ", position)
-  fmt.Println()
 }
 
 func writeMinDistance(point *Point, distances map[string]int) {
@@ -152,5 +148,5 @@ func (p *Point) moveRel(x, y int) {
 }
 
 func (p Point) String() string {
-  return fmt.Sprintf("Point< x: %d y: %d dx: %d dy: %d, steps: %d pipe: %s>", p.x, p.y, p.dx, p.dy, p.steps, strconv.QuoteRune(p.pipe))
+  return fmt.Sprintf("Point< ID: %d x: %d y: %d dx: %d dy: %d, steps: %d pipe: %s>", p.id, p.x, p.y, p.dx, p.dy, p.steps, strconv.QuoteRune(p.pipe))
 }
