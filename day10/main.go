@@ -4,6 +4,7 @@ import (
   "github.com/ty-porter/advent-of-code-2023/util"
   "fmt"
   "strconv"
+  "strings"
 )
 
 type Point struct {
@@ -27,7 +28,7 @@ func main() {
 }
 
 func part1(grid []string, start Point) string {
-  runners := createRunners(start)
+  runners := createRunners(start, grid)
   distances := make(map[string]int)
 
   for {
@@ -64,13 +65,18 @@ func findStart(grid []string) Point {
 }
 
 // This is not a general solution! My input contains start SF, so moving right from start is not valid.
-func createRunners(point Point) []*Point {
-  directions := [][]int { {0, 1}, {0, -1}, {-1, 0} }
-  points := make([]*Point, len(directions))
+func createRunners(point Point, grid []string) []*Point {
+  invalidPipes := []string { "-7F", "-JL", "|FL", "|7J" }
+  directions := [][]int { {0, 1}, {0, -1}, {1, 0}, {-1, 0} }
+  points := make([]*Point, 0)
 
   for i, d := range directions {
     point := Point { id: i, x: point.x, y: point.y, dx: d[0], dy: d[1], pipe: target }
-    points[i] = &point
+    pipe := rune(grid[point.y + point.dy][point.x + point.dx])
+
+    if strings.ContainsRune(invalidPipes[i], pipe) { continue }
+   
+    points = append(points, &point)
   }
 
   return points
