@@ -15,6 +15,11 @@ type Point struct {
   pipe   rune // Current pipe
 }
 
+// Smaller struct for indexing a map by (x, y) coords
+type Coord struct {
+  x, y int
+}
+
 const target = 'S'
 
 func main() {
@@ -24,7 +29,7 @@ func main() {
   start := findStart(grid)
 
   fmt.Println("Part 1: " + part1(grid, start))
-  fmt.Println("Part 2: " + part2(grid))
+  fmt.Println("Part 2: " + part2(grid, start))
 }
 
 func part1(grid []string, start Point) string {
@@ -35,7 +40,8 @@ func part1(grid []string, start Point) string {
     done := 0
 
     for _, position := range runners {
-      move(grid, position, distances)
+      move(grid, position)
+      writeMinDistance(position, distances)
 
       if position.pipe == target { done++ }
     }
@@ -52,7 +58,53 @@ func part1(grid []string, start Point) string {
   return strconv.Itoa(maxDist)
 }
 
-func part2(grid []string) string { return "Implement me!" }
+func part2(grid []string, start Point) string {
+  runners := createRunners(start, grid)
+  path := make(map[Coord]rune, 0)
+
+  startCoord := Coord { x: start.x, y: start.y }
+  path[startCoord] = target
+
+  for {
+    done := 0
+
+    for _, position := range runners {
+      move(grid, position)
+
+      coords := Coord { x: position.x, y: position.y }
+      if position.pipe != target {
+        path[coords] = position.pipe
+      }
+
+      if position.pipe == target { done++ }
+    }
+
+    if done == len(runners) { break }
+  }
+
+  newGrid := make([][]rune, len(grid))
+
+  for i := 0; i < len(grid); i++ {
+    newRow := make([]rune, len(grid[0]))
+
+    newGrid[i] = newRow
+  }
+
+  sum := 0
+  for y, line := range(grid) {
+    for x, pipe := range(line) {
+
+      newGrid[y][x] = pipe
+
+      if isEnclosed(x, y, len(line), path) {
+        sum += 1
+        newGrid[y][x] = 'I'
+      }
+    }
+  }
+
+  return strconv.Itoa(sum)
+}
 
 func findStart(grid []string) Point {
   for y, line := range grid {
@@ -73,7 +125,7 @@ func createRunners(point Point, grid []string) []*Point {
     point := Point { id: i, x: point.x, y: point.y, dx: d[0], dy: d[1], pipe: target }
     pipe := rune(grid[point.y + point.dy][point.x + point.dx])
 
-    if strings.ContainsRune(invalidPipes[i], pipe) { continue }
+    if pipe == '.' || strings.ContainsRune(invalidPipes[i], pipe) { continue }
    
     points = append(points, &point)
   }
@@ -81,7 +133,7 @@ func createRunners(point Point, grid []string) []*Point {
   return points
 }
 
-func move(grid []string, position *Point, distances map[string]int) {
+func move(grid []string, position *Point) {
   if position.steps > 0 && position.pipe == target { return }
 
   xNext := position.x + position.dx
@@ -124,8 +176,6 @@ func move(grid []string, position *Point, distances map[string]int) {
 
   position.steps += 1
   position.pipe = pipe
-
-  writeMinDistance(position, distances)
 }
 
 func writeMinDistance(point *Point, distances map[string]int) {
@@ -153,4 +203,41 @@ func (p *Point) moveRel(x, y int) {
 
 func (p Point) String() string {
   return fmt.Sprintf("Point< ID: %d x: %d y: %d dx: %d dy: %d, steps: %d pipe: %s>", p.id, p.x, p.y, p.dx, p.dy, p.steps, strconv.QuoteRune(p.pipe))
+}
+
+func isEnclosed(x int, y int, maxX int, path map[Coord]rune) bool {
+  coords := Coord { x: x, y: y }
+  _, ok := path[coords]
+
+  if ok { return false }
+
+  segment := make([]rune, 0)
+  for i := 1; i < maxX - x; i++ {
+    coords := Coord { x: x + i, y: y }
+    pipe, ok := path[coords]
+
+    if ok && pipe != '-' { segment = append(segment, pipe) }
+  }
+
+  crossed := countCrosses(segment)
+
+  return crossed > 0 && crossed % 2 == 1
+}
+
+func countCrosses(segment []rune) int {
+  if len(segment) == 0 { return 0 }
+
+  // Specific to my input, cannot move right from S so this counts as crossing pipe.
+  if segment[0] == '|' || segment[0] == 'S' {
+    return 1 + countCrosses(segment[1:len(segment)])
+  }
+
+  start := segment[0]
+  stop  := segment[1]
+
+  cross := 0
+  if start == 'F' && stop == 'J' { cross = 1 }
+  if start == 'L' && stop == '7' { cross = 1 }
+
+  return cross + countCrosses(segment[2:len(segment)])
 }
